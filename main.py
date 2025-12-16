@@ -6,7 +6,7 @@ def run_command(command):
     """Запуск linux команд и возврат их результата"""
     try:
         result = subprocess.run(command, shell=True, capture_output=True, text=True)
-        return result
+        return result.stdout.strip()
     except Exception as e:
         return f'Ошибка {e}'
 
@@ -44,22 +44,22 @@ def main():
 
     # Дисковое пространство
     report.append("\nДисковое пространство:")
-    report.append(str(run_command("df -h | grep -E '^(Filesystem|/dev/)'")))
+    report.append(run_command("df -h | grep -E '^(Filesystem|/dev/)'"))
 
     # Загрузка процессора
     report.append("\nЗагрузка процессора:")
-    report.append(str(run_command('uptime')))
+    report.append(run_command('uptime'))
 
     # 4. Сетевые интерфейсы
     report.append("\n🌐 СЕТЕВЫЕ ИНТЕРФЕЙСЫ:")
     report.append("-" * 30)
-    report.append(str(run_command("ip addr show | grep 'inet ' | grep -v '127.0.0.1'")))
+    report.append(run_command("ip addr show | grep 'inet ' | grep -v '127.0.0.1'"))
 
     # 5. Активные процессы (топ-5 по памяти)
     report.append("\n🔥 ТОП-5 ПРОЦЕССОВ ПО ПАМЯТИ:")
     report.append("-" * 30)
     top_mem = run_command('ps aux --sort=-%mem | head -6')
-    report.append(str(top_mem))
+    report.append(top_mem)
 
 
     file_name = f'system_report_{datetime.datetime.now().strftime("%Y-%m-%d %H.%M.%S")}.txt'
